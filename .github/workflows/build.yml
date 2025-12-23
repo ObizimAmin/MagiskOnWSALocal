@@ -17,22 +17,19 @@ jobs:
         sudo apt update
         sudo apt install -y python3 aria2 unzip whiptail python3-venv python3-pip p7zip-full dialog libnewt-pip
 
-    - name: Set up Python
+    - name: Set up Python venv
       run: |
         python3 -m venv venv
         . venv/bin/activate
         pip install --upgrade pip
-        pip install requests
 
     - name: Run automated build
-      # You will probably need to customize this automated input
       run: |
         chmod +x ./scripts/run.sh
-        # Example automated answers: choose version numbers etc.
         printf "1\n1\n1\n1\n" | ./scripts/run.sh
 
     - name: Upload build output
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wsa-magisk-build
         path: ./output/
