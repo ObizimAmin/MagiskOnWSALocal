@@ -15,7 +15,21 @@ jobs:
     - name: Prepare environment
       run: |
         sudo apt update
-        sudo apt install -y python3 aria2 unzip whiptail python3-venv python3-pip p7zip-full dialog libnewt-pip
+        sudo apt install -y \
+          python3 \
+          python3-venv \
+          python3-pip \
+          aria2 \
+          unzip \
+          p7zip-full \
+          whiptail \
+          dialog \
+          libnewt0.52 \
+          python3-newt \
+          xz-utils \
+          lz4 \
+          cpio
+
 
     - name: Set up Python venv
       run: |
