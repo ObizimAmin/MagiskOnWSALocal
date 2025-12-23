@@ -28,7 +28,8 @@ jobs:
           python3-newt \
           xz-utils \
           lz4 \
-          cpio
+          cpio \
+          expect
 
 
     - name: Set up Python venv
@@ -37,14 +38,31 @@ jobs:
         . venv/bin/activate
         pip install --upgrade pip
 
-    - name: Run non-interactive build
+    - name: Build with automated inputs
       run: |
-        chmod +x ./scripts/run.sh \
-          --arch x64 \
-          --release-type retail \
-          --magisk-ver stable \
-          --root-sol magisk \
-          --compress-format zip
+        chmod +x scripts/run.sh
+
+        # Create an Expect script to send menu choices.
+        # These numbers correspond to menu positions; adjust them if needed.
+        cat << 'EOF' > auto.exp
+        #!/usr/bin/expect -f
+        set timeout -1
+        spawn ./scripts/run.sh
+        expect "Select WSA version"
+        send "1\r"
+        expect "Select architecture"
+        send "1\r"
+        expect "Select Magisk version"
+        send "1\r"
+        expect "Select root solution"
+        send "1\r"
+        expect "Do you want to compress the output"
+        send "1\r"
+        expect eof
+        EOF
+
+        chmod +x auto.exp
+        ./auto.exp
 
     - name: Upload build output
       uses: actions/upload-artifact@v4
