@@ -1,0 +1,38 @@
+name: Build MagiskOnWSALocal
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build WSA with Magisk
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Prepare environment
+      run: |
+        sudo apt update
+        sudo apt install -y python3 aria2 unzip whiptail python3-venv python3-pip p7zip-full dialog libnewt-pip
+
+    - name: Set up Python
+      run: |
+        python3 -m venv venv
+        . venv/bin/activate
+        pip install --upgrade pip
+        pip install requests
+
+    - name: Run automated build
+      # You will probably need to customize this automated input
+      run: |
+        chmod +x ./scripts/run.sh
+        # Example automated answers: choose version numbers etc.
+        printf "1\n1\n1\n1\n" | ./scripts/run.sh
+
+    - name: Upload build output
+      uses: actions/upload-artifact@v3
+      with:
+        name: wsa-magisk-build
+        path: ./output/
