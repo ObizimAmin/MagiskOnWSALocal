@@ -37,10 +37,15 @@ jobs:
         . venv/bin/activate
         pip install --upgrade pip
 
-    - name: Run automated build
+    - name: Run non-interactive build
       run: |
         chmod +x ./scripts/run.sh
-        printf "1\n1\n1\n1\n" | ./scripts/run.sh
+        ./scripts/run.sh \
+          --arch x64 \
+          --release-type retail \
+          --magisk-ver stable \
+          --root-sol magisk \
+          --compress-format zip
 
     - name: Upload build output
       uses: actions/upload-artifact@v4
