@@ -2,6 +2,27 @@ name: Build MagiskOnWSALocal
 
 on:
   workflow_dispatch:
+    inputs:
+      wsa_version:
+        description: 'Select WSA version choice number'
+        required: true
+        default: '1'
+      architecture:
+        description: 'Select architecture choice number'
+        required: true
+        default: '1'
+      magisk_version:
+        description: 'Select Magisk version choice number'
+        required: true
+        default: '1'
+      root_solution:
+        description: 'Select root solution choice number'
+        required: true
+        default: '1'
+      compress_output:
+        description: 'Compress output choice number'
+        required: true
+        default: '1'
 
 jobs:
   build:
@@ -12,25 +33,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Prepare environment
+    - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install -y \
-          python3 \
-          python3-venv \
-          python3-pip \
-          aria2 \
-          unzip \
-          p7zip-full \
-          whiptail \
-          dialog \
-          libnewt0.52 \
-          python3-newt \
-          xz-utils \
-          lz4 \
-          cpio \
-          expect
-
+          python3 python3-venv python3-pip \
+          aria2 unzip p7zip-full \
+          whiptail dialog libnewt0.52 python3-newt \
+          xz-utils lz4 cpio expect
 
     - name: Set up Python venv
       run: |
@@ -42,22 +52,26 @@ jobs:
       run: |
         chmod +x scripts/run.sh
 
-        # Create an Expect script to send menu choices.
-        # These numbers correspond to menu positions; adjust them if needed.
         cat << 'EOF' > auto.exp
         #!/usr/bin/expect -f
         set timeout -1
         spawn ./scripts/run.sh
+
         expect "Select WSA version"
-        send "1\r"
+        send "${{ github.event.inputs.wsa_version }}\r"
+
         expect "Select architecture"
-        send "1\r"
+        send "${{ github.event.inputs.architecture }}\r"
+
         expect "Select Magisk version"
-        send "1\r"
+        send "${{ github.event.inputs.magisk_version }}\r"
+
         expect "Select root solution"
-        send "1\r"
+        send "${{ github.event.inputs.root_solution }}\r"
+
         expect "Do you want to compress the output"
-        send "1\r"
+        send "${{ github.event.inputs.compress_output }}\r"
+
         expect eof
         EOF
 
